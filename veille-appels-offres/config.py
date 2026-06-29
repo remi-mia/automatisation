@@ -18,18 +18,33 @@ CPV_CODES = [
     "79400000",  # Conseil en affaires et en gestion
 ]
 
-# --- Mots-clés (recherchés dans le titre et l'objet) -------------------------
+# --- Mots-clés (le cœur du filtrage : doivent cibler l'IA DIRECTEMENT) --------
+# Volontairement spécifiques à l'IA pour ne ramener que des AO réellement liés à
+# l'intelligence artificielle (formation / audit / conseil / mise en place de
+# solution IA). On évite les termes génériques (« data », « agent », « formation »,
+# « automatisation », « numérique ») qui ramènent du bruit, et « agentique » que le
+# moteur BOAMP stemme vers « agent ».
 KEYWORDS = [
     "intelligence artificielle",
-    "IA",
+    "IA générative",
     "machine learning",
-    "data",
-    "automatisation",
+    "apprentissage automatique",
+    "deep learning",
+    "réseaux de neurones",
+    "grand modèle de langage",
+    "modèle de langage",
+    "traitement du langage naturel",
+    "vision par ordinateur",
+    "data science",
+    "science des données",
+    "agent conversationnel",
+    "agent IA",
+    "agents IA",
     "RAG",
-    "agent",
     "LLM",
-    "formation IA",
-    "transformation numérique",
+    "MCP",
+    "chatbot",
+    "génération augmentée par récupération",
 ]
 
 # --- Priorité géographique ----------------------------------------------------
@@ -51,7 +66,7 @@ PRIO_FRANCE = 2
 PRIO_UE = 3
 
 # --- Seuils et limites --------------------------------------------------------
-SCORE_MIN = 50          # on ne garde que les avis avec score >= 50
+SCORE_MIN = 65          # strict : on ne garde que les AO vraiment centrés IA
 SLACK_TOP_N = 10        # nombre d'avis détaillés dans le message Slack
 WINDOW_HOURS = 24       # fenêtre de récupération (dernières 24 h)
 MAX_TO_SCORE = 80       # garde-fou : nb max d'avis envoyés au scoring par exécution

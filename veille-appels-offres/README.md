@@ -91,7 +91,7 @@ Tout est dans **`config.py`** :
 - `CPV_CODES` : préfixes CPV ciblés.
 - `KEYWORDS` : mots-clés (titre/objet).
 - `AURA_DEPARTEMENTS` / `AURA_TERMES` : périmètre Auvergne-Rhône-Alpes (priorité 1).
-- `SCORE_MIN` (défaut 50), `SLACK_TOP_N` (10), `WINDOW_HOURS` (24), `MAX_TO_SCORE` (80).
+- `SCORE_MIN` (défaut 65, strict — ne garde que les AO vraiment centrés IA), `SLACK_TOP_N` (10), `WINDOW_HOURS` (24), `MAX_TO_SCORE` (80).
 - `TED_COUNTRIES` : `["FRA"]` par défaut. **Étendre à l'UE** : ajouter des codes
   ISO alpha-3 (ex. `["FRA", "DEU", "BEL"]`) ou vider la contrainte pays dans
   `sources/ted.py` (`_build_query`).
@@ -106,17 +106,23 @@ Conformément au brief, voici les points où l'API imposait un choix :
    recherche plein-texte qui **indexe `donnees`** → on filtre via une requête
    `where=("80500000" OR … OR "intelligence artificielle" OR …)`. Les codes CPV sont
    ensuite **extraits** de `donnees` (tous les nombres à 8 chiffres sous une clé CPV).
-2. **Filet large volontaire.** Des mots-clés génériques (« data », « agent », « IA »)
-   ramènent des avis non pertinents. C'est assumé : le **scoring OpenAI (≥ 50)**
-   est le vrai filtre de pertinence.
+2. **Récupération ciblée IA.** La recherche est pilotée par des **mots-clés
+   strictement IA** (intelligence artificielle, machine learning, LLM, RAG, MCP,
+   agents IA, NLP, vision, data science…), et **non par les CPV** (trop génériques :
+   ils ramenaient formation/informatique/conseil sans rapport avec l'IA). Le terme
+   « agentique » est exclu car le moteur BOAMP le stemme vers « agent » (bruit). Le
+   **scoring OpenAI strict (≥ 65)** ne retient ensuite que les AO réellement centrés
+   sur l'IA (formation, audit, conseil ou mise en place de solution IA).
 3. **BOAMP — fenêtre temporelle** sur `dateparution` (date de publication). Pas de
    champ « dernière modification » fiable ; un rectificatif peut republier un avis.
 4. **BOAMP — montant** : aucun champ normalisé → extraction best-effort (première
    valeur non nulle sous une clé VALEUR/MONTANT/ESTIMATION). Peut manquer.
 5. **TED — endpoint** `POST https://api.ted.europa.eu/v3/notices/search`, **sans clé**
    (confirmé par la doc et testé). Requête « expert » validée :
-   `classification-cpv IN (…) AND organisation-country-buyer IN (FRA) AND publication-date>=YYYYMMDD`.
-   Noms de champs confirmés via la liste des valeurs supportées renvoyée par l'API.
+   `(FT ~ "intelligence artificielle" OR FT ~ "machine learning" OR …) AND organisation-country-buyer IN (FRA) AND publication-date>=YYYYMMDD`.
+   ⚠️ Subtilité validée par test : la recherche plein-texte se fait par clauses
+   `FT ~ "terme"` combinées par `OR` ; la forme `FT ~ (a OR b)` renvoie 0. Les AO
+   IA français sur TED sont rares sur 24 h (BOAMP couvre mieux la France).
 6. **TED — priorité AURA** : TED ne fournit pas de département. La priorité
    Auvergne-Rhône-Alpes est déduite par **heuristique textuelle** (Lyon, Grenoble,
    « auvergne »…) — moins fiable que les codes département de BOAMP.

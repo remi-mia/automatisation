@@ -31,9 +31,12 @@ MAX_RECORDS = 300      # garde-fou sur le nombre total récupéré
 
 
 def _build_where(since_date: str) -> str:
-    """Construit la clause ODSQL : (CPV… OR mots-clés…) ET date >= since."""
-    termes = config.CPV_CODES + config.KEYWORDS
-    ors = " OR ".join(f'"{t}"' for t in termes)
+    """Construit la clause ODSQL : (mots-clés IA…) ET date >= since.
+
+    Recherche pilotée par les mots-clés IA (et non par les CPV, trop génériques :
+    ils ramenaient formation/informatique/conseil sans rapport avec l'IA). Les CPV
+    restent extraits pour l'affichage et servent au scoring."""
+    ors = " OR ".join(f'"{t}"' for t in config.KEYWORDS)
     return f"({ors}) and dateparution >= date'{since_date}'"
 
 

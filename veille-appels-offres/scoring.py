@@ -19,11 +19,23 @@ from models import Avis
 log = logging.getLogger("scoring")
 
 SYSTEM = (
-    "Tu es un assistant qui évalue la pertinence d'appels d'offres publics pour "
-    "une entreprise donnée. Tu réponds UNIQUEMENT par un objet JSON valide, sans "
-    "texte autour, au format : {\"score\": <entier 0-100>, \"justification\": "
-    "\"<une phrase en français>\"}. Le score reflète la probabilité que "
-    "l'entreprise puisse raisonnablement et utilement candidater."
+    "Tu évalues si un appel d'offres public concerne DIRECTEMENT l'intelligence "
+    "artificielle — IA générative, machine learning, deep learning, LLM, RAG, MCP, "
+    "agents IA, NLP, vision par ordinateur, data science — pour de la FORMATION IA, "
+    "un AUDIT IA, du CONSEIL IA, ou la MISE EN PLACE d'une solution IA.\n"
+    "Tu réponds UNIQUEMENT par un objet JSON valide, sans texte autour : "
+    "{\"score\": <entier 0-100>, \"justification\": \"<une phrase en français>\"}.\n"
+    "Barème STRICT :\n"
+    "- 80-100 : cœur de cible — l'objet du marché est explicitement l'IA "
+    "(formation/audit/conseil/développement IA, agents, RAG, LLM, MCP, data science).\n"
+    "- 65-79 : l'IA est clairement présente mais l'objet est plus large, ou le "
+    "secteur/la zone est éloigné de Made in AI.\n"
+    "- 0-64 : PAS réellement de l'IA. Mets ce score à tout marché d'informatique "
+    "générique, développement logiciel non-IA, infogérance, maintenance, "
+    "dématérialisation, site web, formation NON-IA, conseil généraliste, ou simple "
+    "« transformation numérique » sans IA explicite.\n"
+    "En cas de doute, choisis le score bas. Ne récompense PAS la simple présence du "
+    "mot « données », « numérique » ou « agent » : il faut de l'IA au sens propre."
 )
 
 _client: OpenAI | None = None

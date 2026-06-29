@@ -51,10 +51,16 @@ FIELDS = [
 
 
 def _build_query(since_date: str) -> str:
-    cpv = " ".join(config.CPV_CODES)
+    """Requête « expert » TED.
+
+    Pilotée par une recherche plein-texte sur les mots-clés IA (chaque terme est
+    une clause `FT ~ "..."` combinée par OR — syntaxe validée par tests réels ;
+    `FT ~ (a OR b)` ne fonctionne PAS), restreinte au(x) pays et à la fenêtre date.
+    On ne filtre pas par CPV (trop générique pour cibler l'IA)."""
+    ft = " OR ".join(f'FT ~ "{k}"' for k in config.KEYWORDS)
     pays = " ".join(config.TED_COUNTRIES)
     return (
-        f"classification-cpv IN ({cpv}) "
+        f"({ft}) "
         f"AND organisation-country-buyer IN ({pays}) "
         f"AND publication-date>={since_date}"
     )
