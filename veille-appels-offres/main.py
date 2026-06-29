@@ -90,7 +90,7 @@ def main() -> int:
             print(slack.rendre_console(retenus))
             print("=" * 70 + "\n")
         else:
-            slack.envoyer(slack.construire_message(retenus))
+            slack.envoyer(slack.construire_payload(retenus))
 
         # 8) Mise à jour de l'état : tous les avis scorés sont marqués « vus »
         #    (évite de les re-scorer ET de les renvoyer ultérieurement).

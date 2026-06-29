@@ -1,7 +1,10 @@
-"""Construction du message Slack (Block Kit) et envoi via webhook entrant.
+"""Construction du message Slack (Block Kit) et envoi via webhook.
 
 L'URL du webhook vient TOUJOURS de la variable d'environnement SLACK_WEBHOOK_URL
-(jamais codée en dur).
+(jamais codée en dur). Ici la destination est un webhook Make qui route puis
+poste sur Slack : le payload contient donc un champ "type": "veille" pour le
+routage, en plus du message Slack prêt à l'emploi (blocks) et des données
+structurées (avis).
 """
 from __future__ import annotations
 
@@ -77,15 +80,56 @@ def construire_message(retenus: list[Avis], date_str: str | None = None) -> dict
     return {"text": titre, "blocks": blocks}
 
 
+def _avis_dict(a: Avis) -> dict:
+    """Vue structurée d'un avis pour le payload Make (mapping facile dans Slack)."""
+    return {
+        "rang": None,  # renseigné dans construire_payload
+        "source": a.source,
+        "score": a.score,
+        "titre": a.titre,
+        "url": a.url,
+        "acheteur": a.acheteur,
+        "lieu": a.lieu,
+        "justification": a.justification or "",
+        "date_limite": _fmt_date(a.date_limite),
+        "montant_estime": a.montant_estime or "",
+    }
+
+
+def construire_payload(retenus: list[Avis], date_str: str | None = None) -> dict:
+    """Payload complet envoyé au webhook Make :
+    - type : "veille" (pour le routage Make)
+    - date, count : métadonnées
+    - text, blocks : message Slack prêt à poster (Block Kit)
+    - avis : top N en données structurées (mapping libre dans Make)
+    """
+    date_str = date_str or dt.date.today().strftime("%d/%m/%Y")
+    msg = construire_message(retenus, date_str)
+    avis = []
+    for i, a in enumerate(retenus[: config.SLACK_TOP_N], 1):
+        d = _avis_dict(a)
+        d["rang"] = i
+        avis.append(d)
+    return {
+        "type": "veille",
+        "date": date_str,
+        "count": len(retenus),
+        "text": msg["text"],
+        "blocks": msg["blocks"],
+        "avis": avis,
+    }
+
+
 def envoyer(payload: dict) -> None:
-    """Envoie le payload au webhook Slack. Lève en cas d'échec."""
+    """Envoie le payload au webhook (Make). Lève en cas d'échec."""
     url = os.environ.get("SLACK_WEBHOOK_URL")
     if not url:
         raise RuntimeError("SLACK_WEBHOOK_URL manquante.")
     session = make_session()
     resp = session.post(url, json=payload, timeout=config.HTTP_TIMEOUT)
     resp.raise_for_status()
-    log.info("Message Slack envoyé (%d bloc(s)).", len(payload.get("blocks", [])))
+    log.info("Payload veille envoyé au webhook (type=%s, %d bloc(s)).",
+             payload.get("type"), len(payload.get("blocks", [])))
 
 
 def rendre_console(retenus: list[Avis], date_str: str | None = None) -> str:
