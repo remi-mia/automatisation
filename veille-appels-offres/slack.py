@@ -96,6 +96,34 @@ def _avis_dict(a: Avis) -> dict:
     }
 
 
+def construire_message_mrkdwn(retenus: list[Avis], date_str: str | None = None) -> str:
+    """Message complet en markdown Slack, prêt à coller dans le champ Text de Make.
+
+    Tout le digest (titre + tous les avis détaillés + reste) tient dans une seule
+    chaîne — c'est ce qu'on mappe via {{1.message}} dans le module Slack."""
+    date_str = date_str or dt.date.today().strftime("%d/%m/%Y")
+    n = len(retenus)
+    if n == 0:
+        return f":mag: *Veille appels d'offres du {date_str}* — aucun avis pertinent aujourd'hui."
+
+    entete = f":mag: *Veille appels d'offres du {date_str} : {n} avis pertinent{'s' if n > 1 else ''}*"
+    blocs = [entete]
+    for i, a in enumerate(retenus[: config.SLACK_TOP_N], 1):
+        # Drapeau pour mettre en avant Auvergne-Rhône-Alpes
+        flag = ":round_pushpin: " if a.prio_geo == config.PRIO_AURA else ""
+        montant = f" · Montant estimé : {a.montant_estime}" if a.montant_estime else ""
+        titre = a.titre if len(a.titre) <= 200 else a.titre[:197] + "…"
+        blocs.append(
+            f"{flag}*{i}. <{a.url}|{_md(titre)}>*  _(score {a.score} · {a.source})_\n"
+            f"Acheteur : {_md(a.acheteur)} — {_md(a.lieu)}\n"
+            f"_Pourquoi :_ {_md(a.justification or '')}\n"
+            f"Date limite : {_fmt_date(a.date_limite)}{montant}"
+        )
+    if n > config.SLACK_TOP_N:
+        blocs.append(f"_… et {n - config.SLACK_TOP_N} autre(s) avis pertinent(s) non détaillé(s)._")
+    return "\n\n".join(blocs)
+
+
 def construire_payload(retenus: list[Avis], date_str: str | None = None) -> dict:
     """Payload complet envoyé au webhook Make :
     - type : "veille" (pour le routage Make)
@@ -114,9 +142,10 @@ def construire_payload(retenus: list[Avis], date_str: str | None = None) -> dict
         "type": "veille",
         "date": date_str,
         "count": len(retenus),
-        "text": msg["text"],
-        "blocks": msg["blocks"],
-        "avis": avis,
+        "text": msg["text"],                 # titre court (notification)
+        "message": construire_message_mrkdwn(retenus, date_str),  # message complet → {{1.message}}
+        "blocks": msg["blocks"],             # option avancée (Block Kit)
+        "avis": avis,                         # données structurées (mapping libre)
     }
 
 
