@@ -5,3 +5,9 @@ node_modules/
 *.log
 scripts/out/
 .DS_Store
+
+# Python (veille-appels-offres)
+.venv/
+__pycache__/
+*.pyc
+veille-appels-offres/.env

@@ -1,0 +1,51 @@
+name: Veille appels d'offres
+
+# Exécution quotidienne. 05:30 UTC ≈ 07:30 Paris en été (CEST), 06:30 en hiver.
+on:
+  schedule:
+    - cron: "30 5 * * *"
+  workflow_dispatch: {}   # permet aussi un lancement manuel depuis l'onglet Actions
+
+permissions:
+  contents: write   # nécessaire pour committer seen_ids.json (idempotence entre runs)
+
+concurrency:
+  group: veille-ao
+  cancel-in-progress: false
+
+jobs:
+  veille:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: veille-appels-offres
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Lancer la veille
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python main.py
+
+      - name: Persister l'état (seen_ids.json)
+        if: always()
+        run: |
+          if [[ -n "$(git status --porcelain seen_ids.json)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add seen_ids.json
+            git commit -m "chore(veille): mise à jour seen_ids.json [skip ci]"
+            git push
+          else
+            echo "seen_ids.json inchangé."
+          fi

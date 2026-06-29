@@ -1,0 +1,9 @@
+# Veille appels d'offres — exécution quotidienne à 7h30.
+# Installer avec : crontab -e  (puis coller la ligne ci-dessous, en adaptant les chemins)
+#
+# Prérequis : un environnement Python avec les dépendances installées
+#   cd /chemin/vers/veille-appels-offres
+#   python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+#   cp .env.example .env  (puis renseigner les clés)
+
+30 7 * * * cd /chemin/vers/veille-appels-offres && /chemin/vers/veille-appels-offres/.venv/bin/python main.py >> veille.log 2>&1
