@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Automatisations — Made in AI</title>
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --surface: #151922;
+      --surface-2: #1c212c;
+      --border: #262c39;
+      --text: #e7ebf2;
+      --muted: #8b94a7;
+      --accent: #6366f1;
+      --accent-2: #818cf8;
+      --green: #22c55e;
+      --green-bg: #0f2a1a;
+      --red: #ef4444;
+      --red-bg: #2a1212;
+      --amber: #f59e0b;
+      --radius: 14px;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.25);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 80% -10%, #1a1f2e 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    a { color: var(--accent-2); }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 20px 64px; }
+
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; margin-bottom: 28px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: grid; place-items: center; font-weight: 700; color: white;
+    }
+    .brand h1 { font-size: 18px; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+    .brand p { margin: 0; font-size: 12.5px; color: var(--muted); }
+
+    .user { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+    .user img { width: 30px; height: 30px; border-radius: 50%; }
+    .btn {
+      border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+      padding: 8px 14px; border-radius: 10px; font-size: 13px; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+      transition: background .15s, border-color .15s;
+    }
+    .btn:hover { background: #232a37; border-color: #333b4d; }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .btn.primary:hover { background: var(--accent-2); }
+
+    /* KPIs */
+    .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 22px; }
+    .kpi {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 18px; box-shadow: var(--shadow);
+    }
+    .kpi .label { font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
+    .kpi .value { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+    .kpi .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .section-title { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 26px 0 12px; }
+
+    /* Automation cards */
+    .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 18px; box-shadow: var(--shadow);
+    }
+    .card .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .card h3 { margin: 0 0 4px; font-size: 15.5px; font-weight: 620; }
+    .card .desc { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+    .card .stats { display: flex; gap: 22px; margin-top: 16px; }
+    .stat .n { font-size: 22px; font-weight: 700; }
+    .stat .t { font-size: 11.5px; color: var(--muted); }
+    .card .foot { margin-top: 14px; font-size: 12px; color: var(--muted); }
+
+    .pill { font-size: 11.5px; font-weight: 600; padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
+    .pill.ok { background: var(--green-bg); color: var(--green); }
+    .pill.bad { background: var(--red-bg); color: var(--red); }
+    .pill.idle { background: var(--surface-2); color: var(--muted); }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    th, td { text-align: left; padding: 11px 14px; font-size: 13px; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 550; font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; }
+    tr:last-child td { border-bottom: none; }
+    .status { font-weight: 600; }
+    .status.success { color: var(--green); }
+    .status.error { color: var(--red); }
+    td.err { color: var(--muted); max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Login */
+    .login {
+      max-width: 420px; margin: 12vh auto 0; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 18px; padding: 34px 30px;
+      text-align: center; box-shadow: var(--shadow);
+    }
+    .login .logo { margin: 0 auto 16px; width: 48px; height: 48px; }
+    .login h2 { margin: 0 0 6px; font-size: 20px; }
+    .login p { color: var(--muted); font-size: 13.5px; margin: 0 0 22px; }
+    .google-btn {
+      width: 100%; justify-content: center; background: white; color: #1f2430;
+      border: none; font-weight: 600; padding: 12px;
+    }
+    .google-btn:hover { background: #f1f3f7; }
+    .alert { background: var(--red-bg); color: #fca5a5; border: 1px solid #4a1f1f; padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-bottom: 18px; }
+    .muted { color: var(--muted); }
+    .empty { color: var(--muted); font-size: 13.5px; padding: 22px; text-align: center; }
+    @media (max-width: 720px) {
+      .kpis { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app"><div class="empty">Chargement…</div></div>
+
+  <script>
+    const $ = (sel) => document.querySelector(sel);
+    const app = $("#app");
+
+    function fmtRelative(iso) {
+      if (!iso) return "jamais";
+      const d = new Date(iso), now = new Date();
+      const s = Math.round((now - d) / 1000);
+      if (s < 60) return "il y a " + s + " s";
+      const m = Math.round(s / 60); if (m < 60) return "il y a " + m + " min";
+      const h = Math.round(m / 60); if (h < 24) return "il y a " + h + " h";
+      const j = Math.round(h / 24); if (j < 30) return "il y a " + j + " j";
+      return d.toLocaleDateString("fr-FR");
+    }
+    function errorRate(a) {
+      const total = Number(a.total) || 0;
+      if (!total) return 0;
+      return Math.round((Number(a.errors) / total) * 1000) / 10;
+    }
+    function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c])); }
+
+    function renderLogin(errorParam) {
+      let alert = "";
+      if (errorParam === "domain") alert = `<div class="alert">Accès réservé aux comptes <b>@made-in-ai.fr</b>.</div>`;
+      else if (errorParam === "auth") alert = `<div class="alert">La connexion a échoué. Réessaie.</div>`;
+      app.innerHTML = `
+        <div class="login">
+          <div class="logo">A</div>
+          <h2>Automatisations</h2>
+          <p>Tableau de bord interne — Made in AI</p>
+          ${alert}
+          <a class="btn google-btn" href="/api/auth/login">
+            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.4 1.1 7.3 2.8l5.7-5.7C33.6 6.1 29 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c2.8 0 5.4 1.1 7.3 2.8l5.7-5.7C33.6 6.1 29 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.5-5.2l-6.2-5.3C29.2 34.9 26.7 36 24 36c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.2 5.3C39.6 36.5 44 31 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
+            Se connecter avec Google
+          </a>
+        </div>`;
+    }
+
+    function renderDashboard(user, data) {
+      const autos = data.automations || [];
+      const recent = data.recent || [];
+      const totalAll = autos.reduce((s, a) => s + (Number(a.total) || 0), 0);
+      const errAll = autos.reduce((s, a) => s + (Number(a.errors) || 0), 0);
+      const rateAll = totalAll ? Math.round((errAll / totalAll) * 1000) / 10 : 0;
+
+      const cards = autos.length ? autos.map(a => {
+        const rate = errorRate(a);
+        const total = Number(a.total) || 0;
+        const pill = total === 0
+          ? `<span class="pill idle">aucune exécution</span>`
+          : rate > 0
+            ? `<span class="pill bad">${rate}% d'erreur</span>`
+            : `<span class="pill ok">100% OK</span>`;
+        return `
+          <div class="card">
+            <div class="top">
+              <div>
+                <h3>${esc(a.name)}</h3>
+                <p class="desc">${esc(a.description || "")}</p>
+              </div>
+              ${pill}
+            </div>
+            <div class="stats">
+              <div class="stat"><div class="n">${total}</div><div class="t">exécutions</div></div>
+              <div class="stat"><div class="n">${Number(a.errors) || 0}</div><div class="t">erreurs</div></div>
+              <div class="stat"><div class="n">${Number(a.last_7d) || 0}</div><div class="t">7 derniers jours</div></div>
+            </div>
+            <div class="foot">Dernière exécution : ${fmtRelative(a.last_run)}</div>
+          </div>`;
+      }).join("") : `<div class="empty">Aucune automatisation enregistrée.</div>`;
+
+      const rows = recent.length ? recent.map(e => `
+        <tr>
+          <td>${esc(e.automation_id)}</td>
+          <td><span class="status ${e.status}">${e.status === "success" ? "Succès" : "Erreur"}</span></td>
+          <td>${e.duration_ms != null ? e.duration_ms + " ms" : "—"}</td>
+          <td class="muted">${fmtRelative(e.created_at)}</td>
+          <td class="err" title="${esc(e.error || "")}">${esc(e.error || "")}</td>
+        </tr>`).join("") : `<tr><td colspan="5" class="empty">Aucune exécution pour l'instant.</td></tr>`;
+
+      app.innerHTML = `
+        <header>
+          <div class="brand">
+            <div class="logo">A</div>
+            <div><h1>Automatisations</h1><p>Tableau de bord — Made in AI</p></div>
+          </div>
+          <div class="user">
+            ${user.picture ? `<img src="${esc(user.picture)}" alt="" referrerpolicy="no-referrer"/>` : ""}
+            <span>${esc(user.email)}</span>
+            <a class="btn" href="/api/auth/logout">Déconnexion</a>
+          </div>
+        </header>
+
+        <div class="kpis">
+          <div class="kpi"><div class="label">Automatisations</div><div class="value">${autos.length}</div></div>
+          <div class="kpi"><div class="label">Exécutions (total)</div><div class="value">${totalAll}</div></div>
+          <div class="kpi"><div class="label">Taux d'erreur global</div><div class="value" style="color:${rateAll>0?'var(--red)':'var(--green)'}">${rateAll}%</div><div class="sub">${errAll} erreur(s)</div></div>
+        </div>
+
+        <div class="section-title">Automatisations</div>
+        <div class="cards">${cards}</div>
+
+        <div class="section-title">Exécutions récentes</div>
+        <table>
+          <thead><tr><th>Automatisation</th><th>Statut</th><th>Durée</th><th>Quand</th><th>Erreur</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    }
+
+    async function init() {
+      const params = new URLSearchParams(location.search);
+      const errorParam = params.get("error");
+      try {
+        const meRes = await fetch("/api/me");
+        if (meRes.status === 401) return renderLogin(errorParam);
+        const user = await meRes.json();
+        if (!user.authenticated) return renderLogin(errorParam);
+
+        const statsRes = await fetch("/api/stats");
+        if (statsRes.status === 401) return renderLogin(errorParam);
+        const data = await statsRes.json();
+        // Nettoie le ?error de l'URL après connexion réussie
+        if (errorParam) history.replaceState({}, "", location.pathname);
+        renderDashboard(user, data);
+      } catch (e) {
+        app.innerHTML = `<div class="empty">Erreur de chargement : ${esc(e.message)}</div>`;
+      }
+    }
+    init();
+  </script>
+</body>
+</html>

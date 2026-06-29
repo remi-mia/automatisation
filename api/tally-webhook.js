@@ -4,6 +4,9 @@ import crypto from "node:crypto";
 import { mapTallyToTemplateData } from "../lib/tally.js";
 import { renderBrief, briefFilename } from "../lib/docx.js";
 import { sendBriefEmail } from "../lib/mailer.js";
+import { logExecution } from "../lib/db.js";
+
+const AUTOMATION_ID = "tally-brief";
 
 // Lit le corps brut de la requête (nécessaire pour vérifier la signature).
 async function readRawBody(req) {
@@ -39,6 +42,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
+  const startedAt = Date.now();
   try {
     // Récupère le corps brut, avec repli sur le corps déjà parsé par Vercel.
     const raw = await readRawBody(req);
@@ -81,9 +85,26 @@ export default async function handler(req, res) {
 
     await sendBriefEmail({ subject, text, filename, buffer });
 
+    await logExecution({
+      automationId: AUTOMATION_ID,
+      status: "success",
+      durationMs: Date.now() - startedAt,
+      meta: {
+        reference_projet: data.reference_projet,
+        nom_produit: data.nom_produit,
+        filename,
+      },
+    });
+
     return res.status(200).json({ ok: true, filename });
   } catch (err) {
     console.error("[tally-webhook] erreur:", err);
+    await logExecution({
+      automationId: AUTOMATION_ID,
+      status: "error",
+      error: err?.message || err,
+      durationMs: Date.now() - startedAt,
+    });
     return res
       .status(500)
       .json({ error: "Échec du traitement", detail: String(err?.message || err) });
