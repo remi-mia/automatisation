@@ -1,7 +1,7 @@
 """Orchestrateur de la veille appels d'offres.
 
 Enchaînement : récupération (BOAMP + TED) → normalisation → déduplication →
-filtrage des avis déjà vus → scoring Anthropic → filtrage par score → tri →
+filtrage des avis déjà vus → scoring OpenAI → filtrage par score → tri →
 message Slack → mise à jour de l'état → journalisation.
 
 Usage :
@@ -74,7 +74,7 @@ def main() -> int:
         nouveaux = [a for a in avis if a.cle_etat not in seen]
         log.info("Nouveaux (non déjà vus) : %d", len(nouveaux))
 
-        # 4) Scoring Anthropic des nouveaux avis.
+        # 4) Scoring OpenAI des nouveaux avis.
         scores = scoring.scorer_lot(nouveaux)
 
         # 5) On ne garde que les avis pertinents (score >= seuil).

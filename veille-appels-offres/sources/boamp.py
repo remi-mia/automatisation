@@ -96,10 +96,12 @@ def _extraire_montant(donnees) -> str | None:
                 if any(x in ku for x in ("VALEUR", "MONTANT", "ESTIMATION")) and isinstance(v, (str, int, float)):
                     s = str(v).strip()
                     try:
-                        nul = float(s.replace(",", ".")) == 0.0
+                        # On ignore les valeurs nulles ou manifestement non-montants
+                        # (ex. compteurs « 1 ») : un montant de marché est >= 1000.
+                        garder = float(s.replace(",", ".").replace(" ", "")) >= 1000
                     except ValueError:
-                        nul = False
-                    if s and not nul:
+                        garder = False
+                    if s and garder:
                         trouve.append(s)
                 else:
                     walk(v)

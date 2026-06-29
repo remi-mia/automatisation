@@ -2,14 +2,14 @@
 
 Outil de production qui, **chaque matin**, détecte les appels d'offres publics
 pertinents pour Made in AI (formation / conseil / audit / développement IA,
-automatisation), les **qualifie** via l'API Anthropic, et pousse une liste
+automatisation), les **qualifie** via l'API OpenAI, et pousse une liste
 **priorisée** dans un canal **Slack**.
 
 Sources : **BOAMP** (France) et **TED** (Union européenne).
 
 ```
 BOAMP ─┐
-       ├─▶ normalisation ─▶ dédup ─▶ filtre "déjà vus" ─▶ scoring Anthropic
+       ├─▶ normalisation ─▶ dédup ─▶ filtre "déjà vus" ─▶ scoring OpenAI
 TED  ──┘                                                      │
                                   score ≥ 50, tri (score puis AURA) ─▶ Slack
 ```
@@ -21,7 +21,7 @@ TED  ──┘                                                      │
 | `main.py` | Orchestrateur + interface ligne de commande |
 | `sources/boamp.py` | Client BOAMP (OpenDataSoft v2.1, ODSQL) |
 | `sources/ted.py` | Client TED (API v3 `notices/search`, requête eForms) |
-| `scoring.py` | Scoring Anthropic (`claude-sonnet-4-6`) : score 0-100 + justification |
+| `scoring.py` | Scoring OpenAI (`gpt-5.4-mini`) : score 0-100 + justification |
 | `slack.py` | Construction Block Kit + envoi webhook + rendu console |
 | `state.py` | `seen_ids.json` (idempotence) |
 | `dashboard_log.py` | Journalisation optionnelle vers le dashboard Supabase |
@@ -46,7 +46,7 @@ cp .env.example .env      # puis renseigner les clés
 | Variable | Obligatoire | Description |
 |---|---|---|
 | `SLACK_WEBHOOK_URL` | oui | Webhook entrant du canal Slack de destination |
-| `ANTHROPIC_API_KEY` | oui | Clé API Anthropic (scoring) |
+| `OPENAI_API_KEY` | oui | Clé API OpenAI (scoring) |
 | `SUPABASE_URL` | non | Active la remontée des exécutions dans le dashboard |
 | `SUPABASE_SERVICE_ROLE_KEY` | non | idem |
 
@@ -78,7 +78,7 @@ Voir `crontab.example` (exécution à 7h30). En résumé :
 peut être lancé à la main (onglet **Actions → Run workflow**).
 
 Définir les **secrets** du dépôt (Settings → Secrets and variables → Actions) :
-`SLACK_WEBHOOK_URL`, `ANTHROPIC_API_KEY`, et éventuellement `SUPABASE_URL`,
+`SLACK_WEBHOOK_URL`, `OPENAI_API_KEY`, et éventuellement `SUPABASE_URL`,
 `SUPABASE_SERVICE_ROLE_KEY`.
 
 Le fichier `seen_ids.json` est **commité automatiquement** après chaque run pour
@@ -107,7 +107,7 @@ Conformément au brief, voici les points où l'API imposait un choix :
    `where=("80500000" OR … OR "intelligence artificielle" OR …)`. Les codes CPV sont
    ensuite **extraits** de `donnees` (tous les nombres à 8 chiffres sous une clé CPV).
 2. **Filet large volontaire.** Des mots-clés génériques (« data », « agent », « IA »)
-   ramènent des avis non pertinents. C'est assumé : le **scoring Anthropic (≥ 50)**
+   ramènent des avis non pertinents. C'est assumé : le **scoring OpenAI (≥ 50)**
    est le vrai filtre de pertinence.
 3. **BOAMP — fenêtre temporelle** sur `dateparution` (date de publication). Pas de
    champ « dernière modification » fiable ; un rectificatif peut republier un avis.
@@ -125,7 +125,7 @@ Conformément au brief, voici les points où l'API imposait un choix :
 8. **Idempotence** : tous les avis **scorés** sont marqués « vus » (pas seulement
    ceux envoyés), pour éviter de les re-scorer ET de les renvoyer. Conséquence : un
    avis mis à jour ne sera pas renvoyé.
-9. **Scoring** : un appel Anthropic **par avis** (séquentiel), plafonné à
+9. **Scoring** : un appel OpenAI **par avis** (séquentiel), plafonné à
    `MAX_TO_SCORE` par exécution (garde-fou coût) ; au-delà, les avis excédentaires
    sont ignorés et un avertissement est journalisé.
 10. **Date limite** : souvent absente côté TED (`deadline-receipt-tender-date-lot`)

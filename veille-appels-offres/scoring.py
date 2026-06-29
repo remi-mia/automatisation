@@ -1,4 +1,4 @@
-"""Qualification des avis via l'API Anthropic (modèle claude-sonnet-4-6).
+"""Qualification des avis via l'API OpenAI (modèle gpt-5.4-mini).
 
 Pour chaque avis, on demande un score de pertinence 0-100 et une justification
 d'une phrase, du point de vue « Made in AI pourrait-elle raisonnablement
@@ -11,7 +11,7 @@ import logging
 import os
 import re
 
-from anthropic import Anthropic
+from openai import OpenAI
 
 import config
 from models import Avis
@@ -26,16 +26,16 @@ SYSTEM = (
     "l'entreprise puisse raisonnablement et utilement candidater."
 )
 
-_client: Anthropic | None = None
+_client: OpenAI | None = None
 
 
-def _get_client() -> Anthropic:
+def _get_client() -> OpenAI:
     global _client
     if _client is None:
-        key = os.environ.get("ANTHROPIC_API_KEY")
+        key = os.environ.get("OPENAI_API_KEY")
         if not key:
-            raise RuntimeError("ANTHROPIC_API_KEY manquante.")
-        _client = Anthropic(api_key=key)
+            raise RuntimeError("OPENAI_API_KEY manquante.")
+        _client = OpenAI(api_key=key)
     return _client
 
 
@@ -66,13 +66,15 @@ def _parse(texte: str) -> tuple[int, str]:
 def scorer(avis: Avis) -> Avis:
     """Renseigne avis.score et avis.justification. En cas d'erreur, score=0."""
     try:
-        resp = _get_client().messages.create(
-            model=config.ANTHROPIC_MODEL,
-            max_tokens=200,
-            system=SYSTEM,
-            messages=[{"role": "user", "content": _prompt(avis)}],
+        resp = _get_client().chat.completions.create(
+            model=config.SCORING_MODEL,
+            messages=[
+                {"role": "system", "content": SYSTEM},
+                {"role": "user", "content": _prompt(avis)},
+            ],
+            response_format={"type": "json_object"},
         )
-        texte = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
+        texte = resp.choices[0].message.content or ""
         avis.score, avis.justification = _parse(texte)
     except Exception as e:  # noqa: BLE001
         log.error("Scoring échoué pour %s : %s", avis.cle_etat, e)

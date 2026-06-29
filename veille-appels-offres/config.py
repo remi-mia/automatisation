@@ -61,7 +61,8 @@ TED_COUNTRIES = ["FRA"]   # pays ciblés (ISO alpha-3). Étendre à l'UE : voir 
 TED_SCOPE = "ALL"          # "ALL" = tous les avis ; voir doc TED pour d'autres scopes.
 
 # --- Modèle de scoring --------------------------------------------------------
-ANTHROPIC_MODEL = "claude-sonnet-4-6"
+# Fournisseur OpenAI (clé OPENAI_API_KEY). Modèle ajustable ici.
+SCORING_MODEL = "gpt-5.4-mini"
 
 # --- Réseau -------------------------------------------------------------------
 HTTP_TIMEOUT = 30        # secondes
