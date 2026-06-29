@@ -1,0 +1,100 @@
+{
+  "eventId": "test-001",
+  "eventType": "FORM_RESPONSE",
+  "createdAt": "2026-06-29T10:00:00.000Z",
+  "data": {
+    "responseId": "resp-001",
+    "formId": "ZjZKkz",
+    "formName": "Brief Charles - Paris",
+    "fields": [
+      { "key": "q1", "label": "Pays d'installation", "type": "INPUT_TEXT", "value": "France" },
+      { "key": "q2", "label": "Référence du projet", "type": "INPUT_TEXT", "value": "PRJ-2026-014" },
+      { "key": "q3", "label": "Date de la commande", "type": "INPUT_DATE", "value": "2026-06-20" },
+      { "key": "q4", "label": "Date de livraison souhaitée", "type": "INPUT_DATE", "value": "2026-09-15" },
+      { "key": "q5", "label": "Référence produit", "type": "INPUT_TEXT", "value": "CHA-LAMP-77" },
+      { "key": "q6", "label": "Nom du produit", "type": "INPUT_TEXT", "value": "Lampe Étoile" },
+      { "key": "q7", "label": "Quantité de pièces", "type": "INPUT_NUMBER", "value": 4 },
+      { "key": "q8", "label": "Numéro(s) de série", "type": "INPUT_TEXT", "value": "SN-001 à SN-004" },
+      {
+        "key": "q9", "label": "Quel type de produit ?", "type": "MULTIPLE_CHOICE",
+        "value": "opt-lampe",
+        "options": [
+          { "id": "opt-lampe", "text": "Lampe" },
+          { "id": "opt-lampadaire", "text": "Lampadaire" }
+        ]
+      },
+      {
+        "key": "q10", "label": "Type de finition", "type": "MULTIPLE_CHOICE",
+        "value": "opt-sm",
+        "options": [
+          { "id": "opt-std", "text": "Finition standard" },
+          { "id": "opt-sm", "text": "Finition sur mesure" }
+        ]
+      },
+      { "key": "q11", "label": "Préciser la finition", "type": "TEXTAREA", "value": "Laiton brossé, patine miel" },
+      { "key": "q12", "label": "Longueur", "type": "INPUT_NUMBER", "value": 300 },
+      { "key": "q13", "label": "Largeur", "type": "INPUT_NUMBER", "value": 200 },
+      { "key": "q14", "label": "Hauteur", "type": "INPUT_NUMBER", "value": 450 },
+      {
+        "key": "q15", "label": "Matière du fil", "type": "MULTIPLE_CHOICE",
+        "value": "opt-soie",
+        "options": [ { "id": "opt-soie", "text": "Soie tressée" } ]
+      },
+      {
+        "key": "q16", "label": "Position du dispositif de commande", "type": "MULTIPLE_CHOICE",
+        "value": "opt-pos-sm",
+        "options": [ { "id": "opt-pos-sm", "text": "Distance sur mesure" } ]
+      },
+      { "key": "q17", "label": "Distance sur mesure", "type": "INPUT_NUMBER", "value": 120 },
+      {
+        "key": "q18", "label": "Longueur de fil", "type": "MULTIPLE_CHOICE",
+        "value": "opt-fil-2",
+        "options": [ { "id": "opt-fil-2", "text": "2 mètres" } ]
+      },
+      {
+        "key": "q19", "label": "Couleur du fil de soie tressée", "type": "DROPDOWN",
+        "value": "opt-c1",
+        "options": [ { "id": "opt-c1", "text": "Noir" } ]
+      },
+      {
+        "key": "q20", "label": "Couleur du switch / variateur", "type": "DROPDOWN",
+        "value": "opt-s1",
+        "options": [ { "id": "opt-s1", "text": "Laiton" } ]
+      },
+      {
+        "key": "q21", "label": "Couleur de la fiche", "type": "DROPDOWN",
+        "value": "opt-f1",
+        "options": [ { "id": "opt-f1", "text": "Noir" } ]
+      },
+      {
+        "key": "q22", "label": "Certification", "type": "CHECKBOXES",
+        "value": ["opt-ce"],
+        "options": [
+          { "id": "opt-ul", "text": "UL Listing" },
+          { "id": "opt-ce", "text": "CE Compliant" }
+        ]
+      },
+      {
+        "key": "q23", "label": "Exposition à l'humidité", "type": "MULTIPLE_CHOICE",
+        "value": "opt-h-non",
+        "options": [ { "id": "opt-h-non", "text": "Non" } ]
+      },
+      {
+        "key": "q24", "label": "Exposition à un environnement marin", "type": "MULTIPLE_CHOICE",
+        "value": "opt-m-non",
+        "options": [ { "id": "opt-m-non", "text": "Non" } ]
+      },
+      {
+        "key": "q25", "label": "Vernis marin requis ?", "type": "MULTIPLE_CHOICE",
+        "value": "opt-v-non",
+        "options": [ { "id": "opt-v-non", "text": "Non" } ]
+      },
+      {
+        "key": "q26", "label": "Montage bateau ?", "type": "MULTIPLE_CHOICE",
+        "value": "opt-b-non",
+        "options": [ { "id": "opt-b-non", "text": "Non" } ]
+      },
+      { "key": "q27", "label": "Longueur tige filetée", "type": "INPUT_NUMBER", "value": 50 }
+    ]
+  }
+}

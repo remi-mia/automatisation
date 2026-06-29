@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/tally-webhook.js": {
+      "includeFiles": "templates/**",
+      "maxDuration": 30
+    }
+  }
+}
