@@ -96,14 +96,21 @@ def scorer(avis: Avis) -> Avis:
 
 
 def scorer_lot(avis_list: list[Avis]) -> list[Avis]:
-    """Score une liste d'avis (séquentiel, avec garde-fou sur le volume)."""
+    """Score une liste d'avis en parallèle (garde-fou sur le volume).
+
+    Le scoring parallèle réduit fortement le temps total (important pour tenir
+    sous la limite de durée d'une fonction serverless Vercel)."""
+    from concurrent.futures import ThreadPoolExecutor
+
     a_scorer = avis_list[: config.MAX_TO_SCORE]
     if len(avis_list) > config.MAX_TO_SCORE:
         log.warning(
             "Volume d'avis (%d) > plafond de scoring (%d) : seuls les %d premiers "
             "sont scorés.", len(avis_list), config.MAX_TO_SCORE, config.MAX_TO_SCORE
         )
-    for i, a in enumerate(a_scorer, 1):
-        scorer(a)
-        log.info("  scoré %d/%d : %s -> %s", i, len(a_scorer), a.cle_etat, a.score)
+    if not a_scorer:
+        return a_scorer
+    with ThreadPoolExecutor(max_workers=config.SCORING_CONCURRENCY) as pool:
+        list(pool.map(scorer, a_scorer))
+    log.info("Scoring terminé : %d avis.", len(a_scorer))
     return a_scorer

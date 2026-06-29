@@ -4,6 +4,10 @@
     "api/tally-webhook.js": {
       "includeFiles": "templates/**",
       "maxDuration": 30
+    },
+    "api/veille.py": {
+      "includeFiles": "veille-appels-offres/**",
+      "maxDuration": 60
     }
   }
 }
