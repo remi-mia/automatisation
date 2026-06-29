@@ -69,7 +69,7 @@ PRIO_UE = 3
 SCORE_MIN = 65          # strict : on ne garde que les AO vraiment centrés IA
 SLACK_TOP_N = 10        # nombre d'avis détaillés dans le message Slack
 WINDOW_HOURS = 24       # fenêtre de récupération (dernières 24 h)
-MAX_TO_SCORE = 80       # garde-fou : nb max d'avis envoyés au scoring par exécution
+MAX_TO_SCORE = 150      # garde-fou : nb max d'avis scorés par exécution (large pour rattrapages)
 SCORING_CONCURRENCY = 8  # nb d'appels de scoring en parallèle (tenue du délai Vercel)
 
 # --- TED ----------------------------------------------------------------------
