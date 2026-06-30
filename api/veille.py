@@ -39,9 +39,12 @@ class handler(BaseHTTPRequestHandler):
             window = int(query.get("window", ["24"])[0])
         except ValueError:
             window = 24
+        # nostate=1 : rejoue sans tenir compte de l'état ET sans marquer comme vus
+        # (utile pour tester / forcer un renvoi). Par défaut, état actif.
+        nostate = query.get("nostate", ["0"])[0] in ("1", "true", "yes")
 
         import main as veille  # import paresseux (après ajout du sys.path)
-        stats = veille.run(window_hours=window, envoyer_slack=True, utiliser_etat=True)
+        stats = veille.run(window_hours=window, envoyer_slack=True, utiliser_etat=not nostate)
         # On n'inclut pas l'aperçu complet dans la réponse HTTP.
         stats.pop("apercu", None)
         return self._json(200 if stats.get("ok") else 500, stats)
