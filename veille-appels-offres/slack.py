@@ -38,7 +38,7 @@ def _ligne_avis(a: Avis, rang: int) -> dict:
         f"*<{a.url}|{_md(titre)}>*\n"
         f"Acheteur : {_md(a.acheteur)} — {_md(a.lieu)}\n"
         f"_Pourquoi :_ {_md(a.justification or '')}\n"
-        f"Date limite : {_fmt_date(a.date_limite)}.{montant}"
+        f"Publié le : {_fmt_date(a.date_publication)} · Date limite : {_fmt_date(a.date_limite)}.{montant}"
     )
     return {"type": "section", "text": {"type": "mrkdwn", "text": texte}}
 
@@ -91,6 +91,7 @@ def _avis_dict(a: Avis) -> dict:
         "acheteur": a.acheteur,
         "lieu": a.lieu,
         "justification": a.justification or "",
+        "date_publication": _fmt_date(a.date_publication),
         "date_limite": _fmt_date(a.date_limite),
         "montant_estime": a.montant_estime or "",
     }
@@ -117,7 +118,7 @@ def construire_message_mrkdwn(retenus: list[Avis], date_str: str | None = None) 
             f"{flag}*{i}. <{a.url}|{_md(titre)}>*  _(score {a.score} · {a.source})_\n"
             f"Acheteur : {_md(a.acheteur)} — {_md(a.lieu)}\n"
             f"_Pourquoi :_ {_md(a.justification or '')}\n"
-            f"Date limite : {_fmt_date(a.date_limite)}{montant}"
+            f"Publié le : {_fmt_date(a.date_publication)} · Date limite : {_fmt_date(a.date_limite)}{montant}"
         )
     if n > config.SLACK_TOP_N:
         blocs.append(f"_… et {n - config.SLACK_TOP_N} autre(s) avis pertinent(s) non détaillé(s)._")
@@ -175,7 +176,7 @@ def rendre_console(retenus: list[Avis], date_str: str | None = None) -> str:
             f"  {a.titre}",
             f"  Acheteur : {a.acheteur} — {a.lieu}",
             f"  Pourquoi : {a.justification or ''}",
-            f"  Date limite : {_fmt_date(a.date_limite)}.{montant}",
+            f"  Publié le : {_fmt_date(a.date_publication)} · Date limite : {_fmt_date(a.date_limite)}.{montant}",
             f"  Lien : {a.url}",
             "",
         ]
