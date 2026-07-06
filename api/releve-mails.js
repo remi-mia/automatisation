@@ -9,6 +9,21 @@ import { logExecution } from "../lib/db.js";
 
 const AUTOMATION_ID = "reponses-email";
 
+// Domaines/mots internes : les mails dont l'expéditeur correspond ne sont pas
+// traités (pas de brouillon). Configurable via INTERNAL_DOMAINS (séparés par des
+// virgules) ; défaut "monego" (couvre monego.fr, monego-ra.fr…).
+const INTERNAL_TOKENS = (process.env.INTERNAL_DOMAINS || "monego")
+  .split(",")
+  .map((s) => s.trim().toLowerCase())
+  .filter(Boolean);
+
+function estInterne(fromEmail, compteEmail) {
+  const e = (fromEmail || "").toLowerCase();
+  if (!e) return false;
+  if (e === (compteEmail || "").toLowerCase()) return true; // soi-même
+  return INTERNAL_TOKENS.some((tok) => e.includes(tok));
+}
+
 function autorise(req) {
   const auth = req.headers["authorization"] || "";
   const cronSecret = process.env.CRON_SECRET;
@@ -29,6 +44,11 @@ async function traiterCompte(compte, stats) {
     stats.traites++;
     try {
       const msg = await getMessage(accessToken, id);
+      // On ne traite pas les mails internes (collègues monego / soi-même).
+      if (estInterne(msg.fromEmail, compte.email)) {
+        stats.ignores++;
+        continue;
+      }
       const rep = await genererReponse({
         from: msg.fromEmail,
         subject: msg.subject,
@@ -56,7 +76,7 @@ export default async function handler(req, res) {
   if (!autorise(req)) return res.status(401).json({ error: "Non autorisé" });
 
   const t0 = Date.now();
-  const stats = { comptes: 0, lus: 0, traites: 0, brouillons: 0, erreurs: 0 };
+  const stats = { comptes: 0, lus: 0, traites: 0, ignores: 0, brouillons: 0, erreurs: 0 };
   try {
     const comptes = await listAccounts();
     stats.comptes = comptes.length;
