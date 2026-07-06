@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Connexion Gmail — Assistant email Made in AI</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(1000px 500px at 80% -10%, #1a1f2e, #0b0d12 55%);
+      color: #e7ebf2; display: grid; place-items: center; min-height: 100vh; margin: 0; }
+    .card { background: #151922; border: 1px solid #262c39; border-radius: 18px;
+      padding: 40px 34px; max-width: 460px; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,.35); }
+    .logo { width: 52px; height: 52px; border-radius: 12px; margin: 0 auto 18px;
+      background: linear-gradient(135deg,#6366f1,#818cf8); display: grid; place-items: center;
+      font-weight: 700; color: #fff; font-size: 22px; }
+    h1 { font-size: 21px; margin: 0 0 10px; }
+    p { color: #8b94a7; font-size: 14px; line-height: 1.6; margin: 0 0 14px; }
+    ul { text-align: left; color: #8b94a7; font-size: 13.5px; line-height: 1.6; margin: 0 0 22px; padding-left: 18px; }
+    .btn { display: inline-flex; align-items: center; gap: 10px; background: #fff; color: #1f2430;
+      font-weight: 600; padding: 13px 20px; border-radius: 11px; text-decoration: none; font-size: 15px; }
+    .btn:hover { background: #f1f3f7; }
+    .note { margin-top: 18px; font-size: 12px; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">M</div>
+    <h1>Connecter votre boîte Gmail</h1>
+    <p>Vous vous apprêtez à connecter votre boîte à l'assistant email de <b>Made in AI</b>. Il prépare pour vous des <b>brouillons de réponse</b> aux emails reçus.</p>
+    <ul>
+      <li>✅ Lit vos emails reçus pour comprendre le contexte</li>
+      <li>✅ Crée un <b>brouillon</b> de réponse dans le fil (jamais envoyé automatiquement)</li>
+      <li>🔒 Aucun email n'est envoyé sans votre validation</li>
+    </ul>
+    <a class="btn" href="/api/gmail/connect">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24.5c0-1.6-.1-3.1-.4-4.5H24v9h11.8c-.5 2.7-2 5-4.4 6.6v5.5h7.1C42.7 37.4 45 31.5 45 24.5z"/><path fill="#34A853" d="M24 46c6 0 11-2 14.6-5.4l-7.1-5.5c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.7-3.9-12.4-9.900H4.3v5.7C7.9 40.9 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.6 27.8c-.4-1.3-.7-2.7-.7-4.8s.3-3.5.7-4.8v-5.7H4.3C2.8 16.5 2 20.1 2 24s.8 7.5 2.3 10.5l7.3-6.7z"/><path fill="#EA4335" d="M24 10.7c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 4 30 2 24 2 15.4 2 7.9 7.1 4.3 14.3l7.3 5.7C13.3 14.6 18.2 10.7 24 10.7z"/></svg>
+      Connecter avec Google
+    </a>
+    <div class="note">Vous pourrez révoquer l'accès à tout moment depuis votre compte Google.</div>
+  </div>
+</body>
+</html>

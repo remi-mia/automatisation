@@ -8,6 +8,15 @@
     "api/veille.py": {
       "includeFiles": "veille-appels-offres/**",
       "maxDuration": 60
+    },
+    "api/releve-mails.js": {
+      "maxDuration": 60
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/connexion-gmail", "destination": "/connexion-gmail.html" }
+  ],
+  "crons": [
+    { "path": "/api/releve-mails", "schedule": "*/15 * * * *" }
+  ]
 }
