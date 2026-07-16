@@ -1,10 +1,12 @@
 name: Veille appels d'offres
 
-# Exécution quotidienne. 05:30 UTC ≈ 07:30 Paris en été (CEST), 06:30 en hiver.
+# DÉSACTIVÉ : la veille est désormais déclenchée par Make → endpoint Vercel
+# (/api/veille). Le cron automatique est retiré pour éviter les doublons.
+# Pour réactiver le run quotidien, décommenter le bloc `schedule` ci-dessous.
 on:
-  schedule:
-    - cron: "30 5 * * *"
-  workflow_dispatch: {}   # permet aussi un lancement manuel depuis l'onglet Actions
+  # schedule:
+  #   - cron: "30 5 * * *"   # 05:30 UTC ≈ 07:30 Paris
+  workflow_dispatch: {}   # lancement manuel uniquement (onglet Actions)
 
 permissions:
   contents: write   # nécessaire pour committer seen_ids.json (idempotence entre runs)
