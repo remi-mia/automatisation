@@ -39,6 +39,31 @@ Tout destinataire (To et Cc) doit appartenir aux domaines de `POSTCALL_ALLOWED_D
 (défaut : `monego.fr`). Pour autoriser un jour les appelants externes, ajouter leur
 domaine à cette variable — ou la passer à une liste plus large.
 
+## Deux voies d'accès au MCP
+
+Une seule fonction serveur, deux façons de s'authentifier :
+
+| Client | URL | Auth |
+|---|---|---|
+| **Claude Code** | `https://automatisation-six.vercel.app/api/mcp` | header `Authorization: Bearer <MCP_TOKEN>` |
+| **Claude web / Cowork** | `https://automatisation-six.vercel.app/mcp/<MCP_URL_TOKEN>` | le token est **dans l'URL** |
+
+Le connecteur personnalisé de Claude web/Cowork n'accepte qu'une URL (pas de header
+personnalisé) : d'où la seconde voie. Les deux tokens sont **distincts**, donc
+révocables séparément (changer la variable dans Vercel puis redéployer).
+
+> ⚠️ Sur la voie « URL », le token EST l'authentification : quiconque obtient cette
+> URL peut lire les transcripts, créer des brouillons **et envoyer des mails** depuis
+> `contact@monego.fr`. À traiter comme un mot de passe (pas de partage, pas de capture
+> d'écran). En cas de doute : régénérer `MCP_URL_TOKEN` et redéployer.
+
+## Brancher Claude web / Claude Cowork
+
+Réglages → **Connecteurs** → *Ajouter un connecteur personnalisé* :
+- Nom : `Post-call Monego`
+- URL : `https://automatisation-six.vercel.app/mcp/<MCP_URL_TOKEN>`
+- Laisser les paramètres avancés (OAuth) vides.
+
 ## Brancher Claude Code
 
 Le dépôt contient un `.mcp.json` : il suffit d'exposer le token une fois, puis
@@ -73,7 +98,8 @@ Les webhooks `post_call_audio` et `call_initiation_failure` sont acceptés puis 
 | Variable | Rôle |
 |---|---|
 | `ELEVENLABS_WEBHOOK_SECRET` | Secret de signature du webhook ElevenLabs |
-| `MCP_TOKEN` | Jeton d'accès au serveur MCP |
+| `MCP_TOKEN` | Jeton d'accès MCP par header (Claude Code) |
+| `MCP_URL_TOKEN` | Jeton d'accès MCP par URL (Claude web / Cowork) |
 | `POSTCALL_SEND_FROM` | Boîte d'envoi (défaut `contact@monego.fr`) |
 | `POSTCALL_ALLOWED_DOMAINS` | Domaines destinataires autorisés (défaut `monego.fr`) |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Base |
@@ -91,7 +117,8 @@ Les webhooks `post_call_audio` et `call_initiation_failure` sont acceptés puis 
 | Fichier | Rôle |
 |---|---|
 | `api/elevenlabs-webhook.js` | Réception + vérification HMAC + stockage |
-| `api/mcp.js` | Serveur MCP HTTP (JSON-RPC 2.0) |
+| `api/mcp.js` | Point d'entrée MCP : authentifie (header **ou** token d'URL) |
+| `lib/mcpServer.js` | Cœur JSON-RPC 2.0 partagé par les deux voies |
 | `lib/mcpTools.js` | Définition et exécution des 6 outils |
 | `lib/postcall.js` | Accès Supabase aux conversations + journal d'actions |
 | `lib/gmailApi.js` | MIME multipart (pièces jointes), `createDraftMessage`, `sendMessage` |

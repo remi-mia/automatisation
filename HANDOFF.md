@@ -87,7 +87,9 @@ Appels du **callbot investisseurs ElevenLabs** → webhook → base → traiteme
 - Doc dédiée : **`POSTCALL-MONEGO.md`** (à lire en premier).
 - Webhook : `api/elevenlabs-webhook.js` → `https://automatisation-six.vercel.app/api/elevenlabs-webhook`.
   Signature `ElevenLabs-Signature: t=…,v0=…` = HMAC-SHA256 sur `{t}.{corps brut}`, tolérance 30 min (`ELEVENLABS_WEBHOOK_SECRET`). ✅ vérifié en prod : le corps brut EST lisible sur Vercel (mauvaise signature → 401, bonne → 200).
-- MCP HTTP : `api/mcp.js` (JSON-RPC 2.0, POST uniquement, `Authorization: Bearer MCP_TOKEN`). Déclaré dans `.mcp.json` du dépôt (token via `${POSTCALL_MCP_TOKEN}`, jamais commité).
+- MCP HTTP : `api/mcp.js` (auth) + `lib/mcpServer.js` (cœur JSON-RPC). **Deux voies d'accès, une seule fonction** (limite Hobby = 12 fonctions serverless, on y est pile) :
+  - Claude Code → `POST /api/mcp` + header `Authorization: Bearer MCP_TOKEN` ; déclaré dans `.mcp.json` du dépôt via `${POSTCALL_MCP_TOKEN}`.
+  - Claude web / Cowork → `POST /mcp/<MCP_URL_TOKEN>` (réécriture vercel.json vers `/api/mcp?token=:token`) car le connecteur custom n'accepte **qu'une URL**, pas de header. Token distinct, révocable séparément. ⚠️ token dans l'URL = accès complet (envoi de mails inclus) : choix assumé par l'utilisateur après signalement du risque.
 - 6 outils (`lib/mcpTools.js`) : `lister_conversations`, `lire_conversation`, `lister_boites`, `creer_brouillon`, `envoyer_email`, `terminer_conversation`.
 - **Rétention** : pas de purge par date — une conversation reste `nouveau` jusqu'à l'appel de `terminer_conversation` (→ `traite`).
 - **Pièces jointes** : `content_base64` OU `url` (le serveur télécharge — à préférer, évite le contexte). Max 8 Mo.
