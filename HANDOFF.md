@@ -105,6 +105,21 @@ Appels du **callbot investisseurs ElevenLabs** → webhook → base → traiteme
 ---
 
 
+## Automatisation 5 — Factures Notion → Sinao (`notion-sinao`) — ✅ CODÉ, DÉPLOYÉ & TESTÉ
+Bouton Notion → échéancier de facturation → **brouillon** de facture Sinao. Doc dédiée : **`NOTION-SINAO.md`**.
+- Webhook unique : `POST /api/notion-facturation?action=preparer|envoyer` (+ `&debug=1`), header `x-webhook-secret: <NOTION_WEBHOOK_SECRET>`.
+- Notion (workspace de Bruno Gorius, page « PRESTALP MONEVEREST ») : **base « Factures » créée** (`NOTION_DB_FACTURES` = 3cfc14a7-2e24-8177-942e-e1f3a50f408b) + propriétés ajoutées sur **Contrat** (`Préparer la facturation`, `Cas de facturation`, `Sans acompte`, relation `Factures`).
+- Règles : 60/40 · mariage 50/40/10 (J-90, J-21) · Booking = facture unique au montant total · rétroco 10 % · collectivités/OT = solde seul. Déduction auto via `Client.Type de client`, `Sans acompte` prime.
+- **Sinao validé en réel** : auth header `Api-Key` (pas Bearer) ; `amount_accurately` = € × 100 × 1000 ; `vat_percent` = % × 100 ; type de ligne = `product` (enum `section|description|product`) ; compte 55 (706).
+- Testé de bout en bout sur le contrat C-25125 (2 200 € HT → acompte 1 320 € + solde 880 €), brouillon Sinao créé puis **artefacts de test supprimés** (brouillon Sinao + lignes Notion archivées).
+- ⚠️ **Limite Vercel Hobby = 12 fonctions.** Pour libérer un slot, `api/auth/{login,callback,logout}.js` ont été **regroupés en `api/auth/[action].js`** (URLs inchangées, vérifiées). On est à **11/12**.
+- **🔴 RESTE À FAIRE** :
+  1. Créer les **boutons Notion** (action « Envoyer un webhook ») sur les bases Contrat et Factures — l'API Notion ne permet pas de créer une propriété *Button*.
+  2. Fournir **app ID + clé API Sinao de Prestalp** (`SINAO_APP_PRESTALP`, `SINAO_KEY_PRESTALP`) ; seul Moneverest est actif.
+  3. Compléter les adresses de facturation côté Notion (le client test avait `AdresseFacture` vide → adresse vide dans Sinao).
+
+---
+
 ## Questions ouvertes / prochaines étapes prioritaires
 1. **Veille** : finir le filtrage « AO ouverts uniquement » (type d'avis + date limite non passée) — cf. section Automatisation 2.
 2. **Réponses email** : confirmer la configuration du client dans Google Cloud → connecter les 3 boîtes → brancher Make.
