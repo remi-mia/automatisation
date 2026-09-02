@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "postcall-monego": {
+      "type": "http",
+      "url": "https://automatisation-six.vercel.app/api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${POSTCALL_MCP_TOKEN}"
+      }
+    }
+  }
+}

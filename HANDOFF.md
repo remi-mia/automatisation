@@ -82,6 +82,27 @@ Mails non lus des boîtes connectées → **API Cortex** (génère la réponse) 
 
 ---
 
+## Automatisation 4 — Post-call Monego (`postcall-monego`) — ✅ CODÉ, DÉPLOYÉ & TESTÉ
+Appels du **callbot investisseurs ElevenLabs** → webhook → base → traitement depuis Claude Code via **serveur MCP**.
+- Doc dédiée : **`POSTCALL-MONEGO.md`** (à lire en premier).
+- Webhook : `api/elevenlabs-webhook.js` → `https://automatisation-six.vercel.app/api/elevenlabs-webhook`.
+  Signature `ElevenLabs-Signature: t=…,v0=…` = HMAC-SHA256 sur `{t}.{corps brut}`, tolérance 30 min (`ELEVENLABS_WEBHOOK_SECRET`). ✅ vérifié en prod : le corps brut EST lisible sur Vercel (mauvaise signature → 401, bonne → 200).
+- MCP HTTP : `api/mcp.js` (JSON-RPC 2.0, POST uniquement, `Authorization: Bearer MCP_TOKEN`). Déclaré dans `.mcp.json` du dépôt (token via `${POSTCALL_MCP_TOKEN}`, jamais commité).
+- 6 outils (`lib/mcpTools.js`) : `lister_conversations`, `lire_conversation`, `lister_boites`, `creer_brouillon`, `envoyer_email`, `terminer_conversation`.
+- **Rétention** : pas de purge par date — une conversation reste `nouveau` jusqu'à l'appel de `terminer_conversation` (→ `traite`).
+- **Pièces jointes** : `content_base64` OU `url` (le serveur télécharge — à préférer, évite le contexte). Max 8 Mo.
+- **Garde-fou** : tout destinataire doit être dans `POSTCALL_ALLOWED_DOMAINS` (défaut `monego.fr`). Envoi depuis `POSTCALL_SEND_FROM` = `contact@monego.fr`. Pour ouvrir aux appelants externes plus tard → élargir cette variable.
+- Tables : `postcall_conversations`, `postcall_actions` (audit).
+- Testé en prod : webhook signé, les 6 outils, brouillon **avec pièce jointe** créé dans `contact@monego.fr`, clôture. Données de test purgées.
+- **⚠️ NON testé** : `envoyer_email` (envoi réel volontairement pas déclenché).
+- **🔴 RESTE À FAIRE** :
+  1. Remplacer `ELEVENLABS_WEBHOOK_SECRET` sur Vercel par le **vrai secret** donné par ElevenLabs, et configurer le post-call webhook côté agent ElevenLabs.
+  2. `export POSTCALL_MCP_TOKEN=<MCP_TOKEN>` (ou `claude mcp add …`) pour utiliser le MCP depuis Claude Code.
+  3. Supprimer le brouillon de test dans `contact@monego.fr` (objet « … (TEST) »).
+
+---
+
+
 ## Questions ouvertes / prochaines étapes prioritaires
 1. **Veille** : finir le filtrage « AO ouverts uniquement » (type d'avis + date limite non passée) — cf. section Automatisation 2.
 2. **Réponses email** : confirmer la configuration du client dans Google Cloud → connecter les 3 boîtes → brancher Make.
