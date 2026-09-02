@@ -17,12 +17,19 @@
     },
     "api/elevenlabs-webhook.js": {
       "maxDuration": 30
+    },
+    "api/mcp-url/[token].js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
     {
       "source": "/connexion-gmail",
       "destination": "/connexion-gmail.html"
+    },
+    {
+      "source": "/mcp/:token",
+      "destination": "/api/mcp-url/:token"
     }
   ]
 }
