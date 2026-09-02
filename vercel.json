@@ -11,9 +11,18 @@
     },
     "api/releve-mails.js": {
       "maxDuration": 60
+    },
+    "api/mcp.js": {
+      "maxDuration": 60
+    },
+    "api/elevenlabs-webhook.js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
-    { "source": "/connexion-gmail", "destination": "/connexion-gmail.html" }
+    {
+      "source": "/connexion-gmail",
+      "destination": "/connexion-gmail.html"
+    }
   ]
 }
