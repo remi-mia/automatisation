@@ -17,9 +17,6 @@
     },
     "api/elevenlabs-webhook.js": {
       "maxDuration": 30
-    },
-    "api/mcp-url/[token].js": {
-      "maxDuration": 60
     }
   },
   "rewrites": [
@@ -29,7 +26,7 @@
     },
     {
       "source": "/mcp/:token",
-      "destination": "/api/mcp-url/:token"
+      "destination": "/api/mcp?token=:token"
     }
   ]
 }
