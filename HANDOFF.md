@@ -96,7 +96,7 @@ Appels du **callbot investisseurs ElevenLabs** → webhook → base → traiteme
 - Testé en prod : webhook signé, les 6 outils, brouillon **avec pièce jointe** créé dans `contact@monego.fr`, clôture. Données de test purgées.
 - **⚠️ NON testé** : `envoyer_email` (envoi réel volontairement pas déclenché).
 - **🔴 RESTE À FAIRE** :
-  1. Remplacer `ELEVENLABS_WEBHOOK_SECRET` sur Vercel par le **vrai secret** donné par ElevenLabs, et configurer le post-call webhook côté agent ElevenLabs.
+  1. ✅ FAIT (2026-09-02) : le **vrai secret ElevenLabs** est posé dans `ELEVENLABS_WEBHOOK_SECRET` (Vercel prod) et vérifié en production (signature valide → 200, ancien secret → 401). Reste à coller l'URL `https://automatisation-six.vercel.app/api/elevenlabs-webhook` dans l'agent ElevenLabs (post-call webhook, type `post_call_transcription`).
   2. `export POSTCALL_MCP_TOKEN=<MCP_TOKEN>` (ou `claude mcp add …`) pour utiliser le MCP depuis Claude Code.
   3. Supprimer le brouillon de test dans `contact@monego.fr` (objet « … (TEST) »).
 
